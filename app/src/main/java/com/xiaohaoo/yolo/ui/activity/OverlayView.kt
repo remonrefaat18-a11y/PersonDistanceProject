@@ -12,6 +12,7 @@ import android.view.View
 import com.xiaohaoo.yolo.util.DetectorUtils
 import kotlin.math.max
 import kotlin.math.min
+import android.util.Log
 
 class OverlayView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -41,11 +42,34 @@ class OverlayView(context: Context, attrs: AttributeSet?) : View(context, attrs)
     }
 
     private var currentTime = SystemClock.uptimeMillis()
+    private val knownHeights = mapOf(
+        "bottle" to 23.0f,
+        "cell phone" to 16.0f,
+        "person" to 170.0f,
+        "car" to 150.0f
+    )
+
+    private val calibObjects = setOf("bottle", "cell phone")
+    private var focal = 1200f
+
+    private val calibDistCm = 50f
+
+    init {
+        setOnClickListener {
+            val box = boundingBoxList?.firstOrNull { b -> calibObjects.contains(LABELS[b.cls]) }
+            if (box != null) {
+                val pixelH = (box.y2 - box.y1) * inputSize.height * inputScaleFactor
+                focal = pixelH * calibDistCm / knownHeights.getValue(LABELS[box.cls])
+                Log.d(TAG, "New FOCAL = $focal")
+            }
+        }
+    }
 
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
         canvas.drawText("延迟: ${SystemClock.uptimeMillis() - currentTime} ms", 40.0f, 120.0f, textPaint)
         currentTime = SystemClock.uptimeMillis()
+        canvas.drawText("FOCAL: ${focal.toInt()}", 40.0f, 180.0f, textPaint)
         val bounds = Rect()
         boundingBoxList?.forEach {
             val left = it.x1 * scaleFactor.first * inputSize.width * inputScaleFactor
@@ -63,6 +87,14 @@ class OverlayView(context: Context, attrs: AttributeSet?) : View(context, attrs)
                 textBackgroundPaint
             )
             canvas.drawText(text, left, top + bounds.height(), textPaint)
+            val realH = knownHeights[text]
+            if (realH != null) {
+                val pixelH = (it.y2 - it.y1) * inputSize.height * inputScaleFactor
+                if (pixelH > 0f) {
+                    val dist = realH * focal / pixelH
+                    canvas.drawText("%.0f cm".format(dist), left, bottom + 45f, textPaint)
+                }
+            }
         }
     }
 

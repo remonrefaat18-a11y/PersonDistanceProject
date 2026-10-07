@@ -115,8 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
         val dialog = MaterialAlertDialogBuilder(this@MainActivity).setTitle("提示").setMessage("模型加载中...").setCancelable(false).show()
         interpreter = Interpreter(FileUtil.loadMappedFile(this@MainActivity, "yolov8n_int8.tflite"), Interpreter.Options().apply {
-            numThreads = Runtime.getRuntime().availableProcessors()
-            addDelegate(GpuDelegate())
+            numThreads = 2
         })
         updateProcessParam()
         OverlayView.LABELS = FileUtil.loadLabels(this@MainActivity, "labels.txt")
