@@ -255,6 +255,11 @@ names still match the app implementation.
 - The app processes the highest-confidence detection for the selected class;
   it does not identify a particular object over time.
 
+
+  ## Download link for android:
+
+https://www.mediafire.com/file/rubd9tt9wzm2c1f/app-arm64-v8a-release.apk/file
+
 ## License and model provenance
 
 This repository does not define a project-wide license. Check the licenses and
