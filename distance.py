@@ -5,6 +5,8 @@ import cv2
 KNOWN_HEIGHTS = {
     "bottle": 23.0,
     "cell phone": 16.0,
+    "car":140,
+    "person":170
 
 }
 

@@ -1,3 +1,7 @@
-##computer vision 
 pip install opencv-python
 pip install ultralytics
+pip install onnx
+pip install onnxruntime
+flutter pub add camera
+flutter pub add image
+flutter pub add flutter_onnxruntime
